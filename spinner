@@ -14,8 +14,9 @@ cmd=""
 function usage() {
   local exit_code="${1:-0}"
 
-  cat <<EOL
-usage: spinner [OPTIONS] [-- command]
+  cat << EOL
+usage: spinner [OPTIONS] -- command
+       command | spinner [OPTIONS]
 
 Options:
   --help      | -h    show help information
@@ -65,14 +66,6 @@ while (("$#")); do
 done
 
 # ------------------------------------------------------------------------------
-# Validate arguments
-# ------------------------------------------------------------------------------
-if [ -z "$cmd" ]; then
-  echo >&2 "No command provided. Use -- to specify the command."
-  usage 1
-fi
-
-# ------------------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------------------
 # Create a temporary file to store command output
@@ -85,16 +78,16 @@ trap 'kill -9 $spinner_pid 2>/dev/null || true; rm -f "$tmpfile"' EXIT
 
 # Capture the input and write to the temp file, suppress stdout
 if [ -n "$cmd" ]; then
-  eval "$cmd" >"$tmpfile"
+  eval "$cmd" > "$tmpfile"
   cmd_exit_code=$?
 else
-  tee "$tmpfile" >/dev/null
+  tee "$tmpfile" > /dev/null
   cmd_exit_code=${PIPESTATUS[0]}
 fi
 
 # Stop the spinner
 kill -9 $spinner_pid
-wait $spinner_pid 2>/dev/null || true
+wait $spinner_pid 2> /dev/null || true
 
 # Clear spinner line
 echo -ne "\r\033[K" >&2

@@ -5,7 +5,9 @@ spinner
 # SYNOPSIS
 
 ```
-spinner -- sleep 5
+spinner --msg "Sleeping..." -- sleep 5
+
+some-long-command | spinner --msg "Commanding longingly..."
 ```
 
 # DESCRIPTION
